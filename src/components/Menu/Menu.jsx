@@ -4,14 +4,17 @@ import './Menu.css'
 function Menu() {
     const progressbarRef = useRef(null)
     const audioRef = useRef(null)
-    const arrayMusic = ['zabud', 'ameli', 'blindzone']
+    const arrayMusic = [
+        { file: 'zabud', author: 'Guram D, Toxi$', name: 'Забудь' },
+        { file: 'ameli', author: 'Big Baby Tape, Aarne, Toxi$', name: 'Амели' },
+        { file: 'blindzone', author: 'Obladaet', name: 'Blind Zone' }
+    ]
     const [trackIndex, setTrackIndex] = useState({ index: 0 })
-    const arrayInter = []
     let progressPB
     const [isPlay, setIsPlay] = useState([false])
 
     const play = () => {
-        if (isPlay) {
+        if (!isPlay[0]) {
             audioRef.current.play()
             const copyState = [...isPlay]
             copyState[0] = true
@@ -26,11 +29,11 @@ function Menu() {
             progressPB = setInterval(() => {
                 const fullPB = progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration
                 progressbarRef.current.value = fullPB
+                console.log('interval')
             }, 1000)
-            arrayInter.push(progressPB)
             return
         }
-        clearAllInterval()
+        clearInterval(progressPB)
     })
 
     const pause = () => {
@@ -38,20 +41,15 @@ function Menu() {
         const copyState = [...isPlay]
         copyState[0] = false
         setIsPlay(copyState)
-        clearAllInterval()
-    }
-
-    const clearAllInterval = () => {
-        for (let i = 0; i < arrayInter.length; i++) {
-            clearInterval(arrayInter[i])
-        }
+        clearInterval(progressPB)
+        console.log(isPlay[0])
     }
 
     const nextTrack = () => {
         pause()
         const copyState = { ...trackIndex }
         if (copyState.index >= arrayMusic.length - 1) {
-            copyState.index = 0
+            return
         } else {
             copyState.index++
         }
@@ -63,7 +61,7 @@ function Menu() {
         pause()
         const copyState = { ...trackIndex }
         if (copyState.index <= 0) {
-            copyState.index = arrayMusic.length - 1
+            return
         } else {
             copyState.index--
         }
@@ -84,10 +82,10 @@ function Menu() {
                 ref={audioRef}
                 style={{ 'display': 'none' }}
                 onEnded={nextTrack}
-                src={`./music/${arrayMusic[trackIndex.index]}.mp3`}>
+                src={`./music/${arrayMusic[trackIndex.index].file}.mp3`}>
             </audio>
             <div className="audioMenu_display">
-                <p className="audioMenu_trackName">Сейчас играет - {arrayMusic[trackIndex.index]}</p>
+                <p className="audioMenu_trackName">{arrayMusic[trackIndex.index].name} - {arrayMusic[trackIndex.index].author}</p>
                 <progress className="audioMenu_progressbar" onClick={chooseTimeProgressbar} ref={progressbarRef} max='100' value='0'></progress>
             </div>
             <div className="audioMenu_block">
