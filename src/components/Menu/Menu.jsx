@@ -6,22 +6,40 @@ function Menu() {
     const audioRef = useRef(null)
     const arrayMusic = ['zabud', 'ameli', 'blindzone']
     const [trackIndex, setTrackIndex] = useState({ index: 0 })
+    const arrayInter = []
     let progressPB
+    let isPlay = true
 
     const play = () => {
-        audioRef.current.play()
-        progressPB = setInterval(() => {
-            const fullPB = progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration
-            progressbarRef.current.value = fullPB
-            console.log('1')
-        }, 1000)
+        if (isPlay) {
+            audioRef.current.play()
+            progressPB = setInterval(nowTimeProgressbar, 1000)
+            arrayInter.push(progressPB)
+            isPlay = false
+            return
+        }
+        alert('Трек уже проигрывается')
     }
 
+    const nowTimeProgressbar = () => {
+        const fullPB = progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration
+        progressbarRef.current.value = fullPB
+        console.log('interval')
+    }
     const pause = () => {
         audioRef.current.pause()
-        clearInterval(progressPB)
+        isPlay = true
+        clearAllInterval()
     }
+
+    const clearAllInterval = () => {
+        for (let i = 0; i < arrayInter.length; i++) {
+            clearInterval(arrayInter[i])
+        }
+    }
+
     const nextTrack = () => {
+        pause()
         const copyState = { ...trackIndex }
         if (copyState.index >= arrayMusic.length - 1) {
             copyState.index = 0
@@ -33,6 +51,7 @@ function Menu() {
     }
 
     const prevTrack = () => {
+        pause()
         const copyState = { ...trackIndex }
         if (copyState.index <= 0) {
             copyState.index = arrayMusic.length - 1
@@ -50,11 +69,6 @@ function Menu() {
         audioRef.current.currentTime = audioRef.current.duration * (clickedValue / 100)
     }
 
-    const getProgressPB = () => {
-        const fullPB = Math.round(progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration)
-        progressbarRef.current.value = fullPB
-    }
-
     return (
         <div className="menu">
             <audio
@@ -63,13 +77,19 @@ function Menu() {
                 onEnded={nextTrack}
                 src={`./music/${arrayMusic[trackIndex.index]}.mp3`}>
             </audio>
-            <progress onClick={chooseTimeProgressbar} ref={progressbarRef} max='100' value='0'></progress>
-            <a className="download_music_link" download={'myMusic'} href={`./music/${arrayMusic[trackIndex.index]}.mp3`}>Скачать</a>
-            <p>Сейчас играет - {arrayMusic[trackIndex.index]}</p>
-            <button className="audioMenu_btn" onClick={prevTrack}>←</button>
-            <button className="audioMenu_btn" onClick={play}>▷</button>
-            <button className="audioMenu_btn" onClick={pause}>| |</button>
-            <button className="audioMenu_btn" onClick={nextTrack}>→</button>
+            <div className="audioMenu_display">
+                <p className="audioMenu_trackName">Сейчас играет - {arrayMusic[trackIndex.index]}</p>
+                <progress className="audioMenu_progressbar" onClick={chooseTimeProgressbar} ref={progressbarRef} max='100' value='0'></progress>
+            </div>
+            <div className="audioMenu_block">
+                <div className="audioMenu_block_btn">
+                    <button className="audioMenu_btn next_btn" onClick={prevTrack}>≪</button>
+                    <button className="audioMenu_btn around_btn" onClick={play}>▷</button>
+                    <button className="audioMenu_btn around_btn" onClick={pause}>| |</button>
+                    <button className="audioMenu_btn prev_btn" onClick={nextTrack}>≫</button>
+                </div>
+                <a className="download_music_link" download={'myMusic'} href={`./music/${arrayMusic[trackIndex.index]}.mp3`}>⇩</a>
+            </div>
         </div>
     );
 }

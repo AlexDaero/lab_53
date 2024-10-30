@@ -1,21 +1,90 @@
-.menu{
+.menu {
     display: flex;
-    margin: 20px;
+    flex-direction: column;
+    margin: 20px auto;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 80px;
+    border: 1px solid black;
+    width: 450px;
+    height: 450px;
+    border-radius: 15px;
+    background-color: rgb(0, 221, 195);
+}
+
+.audioMenu_progressbar {
+    width: 345px;
+    height: 40px;
+}
+
+.audioMenu_display {
+    margin-top: 45px;
+    border: 1px solid black;
+    padding: 30px;
+    background-color: rgb(0, 0, 0);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.audioMenu_block {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 20px;
 }
-.audioMenu_btn{
+
+.audioMenu_btn {
     width: 80px;
     height: 40px;
-    border-radius: 10px;
     font-size: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.download_music_link{
+
+.audioMenu_btn:hover {
+    background-color: rgb(128, 128, 128);
+}
+
+.audioMenu_trackName {
+    font-size: 22px;
+    color: rgb(245, 245, 245);
+}
+
+.download_music_link {
     text-decoration: none;
     font-size: 20px;
     color: rgb(0, 0, 0);
+    text-transform: uppercase;
+    background-color: rgb(255, 236, 236);
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid black;
+}
+
+.download_music_link:hover {
+    background-color: rgb(128, 128, 128);
+}
+
+.audioMenu_block_btn {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.around_btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.next_btn {
+    border-radius: 50% 0 0 50%;
+}
+
+.prev_btn {
+    border-radius: 0 50% 50% 0;
 }
