@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import './Menu.css'
 
 function Menu() {
@@ -8,27 +8,36 @@ function Menu() {
     const [trackIndex, setTrackIndex] = useState({ index: 0 })
     const arrayInter = []
     let progressPB
-    let isPlay = true
+    const [isPlay, setIsPlay] = useState([false])
 
     const play = () => {
         if (isPlay) {
             audioRef.current.play()
-            progressPB = setInterval(nowTimeProgressbar, 1000)
-            arrayInter.push(progressPB)
-            isPlay = false
+            const copyState = [...isPlay]
+            copyState[0] = true
+            setIsPlay(copyState)
             return
         }
         alert('Трек уже проигрывается')
     }
 
-    const nowTimeProgressbar = () => {
-        const fullPB = progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration
-        progressbarRef.current.value = fullPB
-        console.log('interval')
-    }
+    useEffect(() => {
+        if (isPlay[0]) {
+            progressPB = setInterval(() => {
+                const fullPB = progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration
+                progressbarRef.current.value = fullPB
+            }, 1000)
+            arrayInter.push(progressPB)
+            return
+        }
+        clearAllInterval()
+    })
+
     const pause = () => {
         audioRef.current.pause()
-        isPlay = true
+        const copyState = [...isPlay]
+        copyState[0] = false
+        setIsPlay(copyState)
         clearAllInterval()
     }
 
