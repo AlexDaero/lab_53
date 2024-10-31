@@ -10,43 +10,39 @@ function Menu() {
         { file: 'blindzone', author: 'Obladaet', name: 'Blind Zone' }
     ]
     const [trackIndex, setTrackIndex] = useState({ index: 0 })
-    let progressPB
-    const [isPlay, setIsPlay] = useState([false])
+    const [currentTime, setCurrentTime] = useState({ value: 0, nowTime: '', duration: '' })
+    let isPlay = false
+    let minute = 0
+    let seconds = 0
 
     const play = () => {
-        if (!isPlay[0]) {
+        if (!isPlay) {
             audioRef.current.play()
-            const copyState = [...isPlay]
-            copyState[0] = true
-            setIsPlay(copyState)
+            isPlay = true
             return
         }
         alert('Трек уже проигрывается')
     }
 
     useEffect(() => {
-        if (isPlay[0]) {
-            progressPB = setInterval(() => {
-                const fullPB = progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration
-                progressbarRef.current.value = fullPB
-                console.log('interval')
-            }, 1000)
-            return
+        if (!audioRef.current) return
+        const updateProgressbar = () => {
+            const fullPB = progressbarRef.current.max * audioRef.current.currentTime / audioRef.current.duration
+            const copyState = { ...currentTime }
+            copyState.nowTime = new Date(audioRef.current.currentTime * 1000).toISOString().substring(11, 19)
+            copyState.duration = new Date(audioRef.current.duration * 1000).toISOString().substring(11, 19)
+            copyState.value = String(fullPB)
+            setCurrentTime(copyState)
         }
-        clearInterval(progressPB)
-    })
+        audioRef.current.addEventListener('timeupdate', updateProgressbar)
+    }, [])
 
     const pause = () => {
         audioRef.current.pause()
-        const copyState = [...isPlay]
-        copyState[0] = false
-        setIsPlay(copyState)
-        clearInterval(progressPB)
-        console.log(isPlay[0])
+        isPlay = false
     }
 
     const nextTrack = () => {
-        pause()
         const copyState = { ...trackIndex }
         if (copyState.index >= arrayMusic.length - 1) {
             return
@@ -58,7 +54,6 @@ function Menu() {
     }
 
     const prevTrack = () => {
-        pause()
         const copyState = { ...trackIndex }
         if (copyState.index <= 0) {
             return
@@ -86,7 +81,8 @@ function Menu() {
             </audio>
             <div className="audioMenu_display">
                 <p className="audioMenu_trackName">{arrayMusic[trackIndex.index].name} - {arrayMusic[trackIndex.index].author}</p>
-                <progress className="audioMenu_progressbar" onClick={chooseTimeProgressbar} ref={progressbarRef} max='100' value='0'></progress>
+                <p className="audioMenu_trackName">{currentTime.nowTime} : {currentTime.duration}</p>
+                <progress className="audioMenu_progressbar" onClick={chooseTimeProgressbar} ref={progressbarRef} max='100' value={currentTime.value}></progress>
             </div>
             <div className="audioMenu_block">
                 <div className="audioMenu_block_btn">
@@ -95,7 +91,11 @@ function Menu() {
                     <button className="audioMenu_btn around_btn" onClick={pause}>| |</button>
                     <button className="audioMenu_btn prev_btn" onClick={nextTrack}>≫</button>
                 </div>
-                <a className="download_music_link" download={'myMusic'} href={`./music/${arrayMusic[trackIndex.index]}.mp3`}>⇩</a>
+                <div className="audioMenu_block_btn">
+                    <button className="audioMenu_btn around_btn" >∞</button>
+                    <a className="download_music_link" download={`${arrayMusic[trackIndex.index].name}`} href={`./music/${arrayMusic[trackIndex.index].file}.mp3`}>⇩</a>
+                    <button className="audioMenu_btn around_btn" >⟲</button>
+                </div>
             </div>
         </div>
     );
